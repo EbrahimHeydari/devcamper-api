@@ -1,58 +1,26 @@
-const http = require('http')
+const express = require('express')
+const dotenv = require('dotenv')
+const morgan = require('morgan')
 
-const persons = [
-  { id: 90, name: "Ebrahim" },
-  { id: 30, name: "Komeil" },
-  { id: 34, name: "Ali" },
-]
+dotenv.config({ path: './config/config.env' })
 
-const server = http.createServer((req, res) => {
-  const { method, url } = req
-  let body = []
+// Route files
+const bootcamps = require('./routes/bootcamps')
 
-  req.on('data', chunk => {
-    body.push(chunk)
-  }).on('end', () => {
-    body = Buffer.concat(body).toString()
+// Load env vars
+const PORT = process.env.PORT || 4000
+const NODE_ENV = process.env.NODE_ENV
 
-    let status = 404
-    const response = {
-      success: false,
-      data: null,
-      error: null
-    }
+const app = express()
 
-    if (method === 'GET' && url === '/persons') {
-      status = 200
-      response.success = true
-      response.data = persons
-    }
-    else if (method === 'POST' && url === '/persons') {
-      const { id, name } = JSON.parse(body)
+// Dev Logging midlleware
+if (NODE_ENV === 'development')
+  app.use(morgan('dev'))
 
-      if (!id || !name) {
-        status = 400
-        response.error = 'add id and name'
-      }
-      else {
-        persons.push({ id, name })
-        status = 201
-        response.success = true
-        response.data = persons
-      }
-    }
+// Mount routers
+app.use('/api/v1/bootcamps', bootcamps)
 
-    res.writeHead(status, {
-      'X-Powered-By': 'Nodejs',
-      'Content-Type': 'application/json'
-    })
-
-    res.end(
-      JSON.stringify(response)
-    )
-  })
-})
-
-const PORT = 5000
-
-server.listen(PORT, () => console.log(`Server is running on port ${PORT}`))
+app.listen(
+  PORT,
+  console.log(`server is running in ${NODE_ENV} mode on port ${PORT}`)
+)

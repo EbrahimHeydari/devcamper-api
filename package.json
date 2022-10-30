@@ -4,13 +4,18 @@
   "description": "Nodejs Starter app",
   "main": "server.js",
   "scripts": {
-    "test": "Error: no test specified && exit 1",
-    "start": "nodemon server.js"
+    "start": "NODE_ENV=production node server",
+    "dev": " nodemon server"
   },
   "keywords": [],
   "author": "Ebrahim Heidary",
   "license": "MIT",
   "devDependencies": {
     "nodemon": "^2.0.20"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "morgan": "^1.10.0"
   }
 }
