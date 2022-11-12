@@ -1,5 +1,4 @@
-const mongoose = require("mongoose")
-const Bootcamp = require("./Bootcamp")
+const mongoose = require('mongoose')
 
 const CourseSchema = new mongoose.Schema({
   title: {
@@ -17,7 +16,7 @@ const CourseSchema = new mongoose.Schema({
   },
   tuition: {
     type: Number,
-    required: [true, 'Please add tuition cost']
+    required: [true, 'Please add a tuition cost']
   },
   minimumSkill: {
     type: String,
@@ -26,20 +25,25 @@ const CourseSchema = new mongoose.Schema({
   },
   scholarshipAvailable: {
     type: Boolean,
-    default: false,
+    default: false
   },
   createdAt: {
     type: Date,
-    default: Date.now()
+    default: Date.now
   },
   bootcamp: {
     type: mongoose.Schema.ObjectId,
     ref: 'Bootcamp',
     required: true
+  },
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'User',
+    required: true
   }
 })
 
-// static method to get average of course tuitions
+// Static method to get avg of course tuitions
 CourseSchema.statics.getAverageCost = async function (bootcampId) {
   const obj = await this.aggregate([
     {
@@ -62,13 +66,13 @@ CourseSchema.statics.getAverageCost = async function (bootcampId) {
   }
 }
 
-// Cal getAverageCost after save
-CourseSchema.post('save', function () {
+// Call getAverageCost after save
+CourseSchema.post('save', function() {
   this.constructor.getAverageCost(this.bootcamp)
 })
 
-// Cal getAverageCost before remove
-CourseSchema.pre('remove', function () {
+// Call getAverageCost before remove
+CourseSchema.pre('remove', function() {
   this.constructor.getAverageCost(this.bootcamp)
 })
 
