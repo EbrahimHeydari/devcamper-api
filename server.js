@@ -7,6 +7,9 @@ const colors = require('colors')
 const errorHandler = require('./middleware/error')
 const fileUpload = require('express-fileupload')
 const cookieParser = require('cookie-parser')
+const ExpressMongoSanitize = require('express-mongo-sanitize')
+const helmet = require('helmet')
+const xss = require('xss-clean')
 
 // Load env vars
 dotenv.config({ path: './config/config.env' })
@@ -22,6 +25,9 @@ const courses = require('./routes/courses')
 const auth = require('./routes/auth')
 const users = require('./routes/users')
 const reviews = require('./routes/reviews')
+const hpp = require('hpp')
+const cors = require('cors')
+const rateLimit = require('express-rate-limit')
 
 const app = express()
 
@@ -37,6 +43,29 @@ if (NODE_ENV === 'development')
 
 // File uploading
 app.use(fileUpload())
+
+// Sanitize data
+app.use(ExpressMongoSanitize())
+
+// Set security headers
+app.use(helmet())
+
+// Prevent XSS Atacks
+app.use(xss())
+
+// Enable CORS
+app.use(cors())
+
+// Rate Limiting
+const limiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 100
+})
+
+app.use(limiter)
+
+// Prevent http param pollution
+app.use(hpp())
 
 // Set static folder
 app.use(express.static(path.join(__dirname, 'public')))
