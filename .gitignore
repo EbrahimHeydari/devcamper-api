@@ -1,7 +1,5 @@
 /node_modules
 /config
-/public/uploads
 /source
 /_data
 *.txt
-.gitkeep
